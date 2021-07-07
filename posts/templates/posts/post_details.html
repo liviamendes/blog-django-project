@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %} {{ post.title|title }} | {% endblock %}
+
+{% block content %}
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8 text-center">
+        <h2>{{ post.title }}</h2>
+        <h5>{{ post.introduction }}.</h5>
+        <p class="text-muted mt-4">
+            <small>
+                {{ post.author }} | {{ post.date }} | {{ post.category }}
+            </small>
+        </p>
+    </div>
+    <div class="col-xl"></div>
+</div>
+
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+        {% if post.image %}
+        <img class="img-fluid pb-5 " src="{{ post.image.url }}" alt="{{ post.title }}">
+        {% endif %}
+        {{ post.content|safe }}
+    </div>
+    <div class="col-xl"></div>
+</div>
+
+{% if comments %}
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+        <h2 class="my-3">Comments ({{comments.count}})</h2>
+        {% for comment in comments %}
+        <h5 class="mb-2 mt-5">{{ comment.comment_name }} said:</h5>
+        <small class="text-muted">{{comment.date_comment}}</small>
+        <p class="mb-1">{{comment.comment}}</p>
+        {% endfor %}
+    </div>
+    <div class="col-xl"></div>
+</div>
+{% endif %}
+
+<div class="row pt-5">
+    <div class="col-xl"></div>
+    <div class="col-xl-8">
+        <h2 class="my-3">Leave a comment</h2>
+
+        <form method="POST" action="#send_comment">
+            {% csrf_token %}
+
+            {% for hidden_field in form.hidden_fields %}
+            {{ hidden_field }}
+            {% endfor %}
+
+            {% for visible_field in form.visible_fields %}
+                {{ visible_field|as_crispy_field }}
+            {% endfor %}
+
+            {% include 'partials/_messages.html' %}
+            <input id="send_comment" type="submit" class="btn btn-secondary"
+                   value="Send">
+        </form>
+    </div>
+    <div class="col-xl"></div>
+</div>
+{% endblock %}
